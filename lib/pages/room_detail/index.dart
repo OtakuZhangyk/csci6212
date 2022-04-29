@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hook_up_rent/pages/home/info/index.dart';
 import 'package:hook_up_rent/pages/home/tab_search/data_list.dart';
 import 'package:hook_up_rent/pages/room_detail/dart.dart';
 import 'package:hook_up_rent/widgets/common_swiper.dart';
@@ -19,6 +20,7 @@ var bottomButtonTextStyle = const TextStyle(color: Colors.white, fontSize: 18);
 class _RoomDetailPageState extends State<RoomDetailPage> {
   late RoomDetailData data;
   bool isLike = false; // 是否收藏
+  bool showAllText = false; // 是否展开
 
   @override
   void initState() {
@@ -32,15 +34,14 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
   Widget build(BuildContext context) {
     // 获取通过路由传递过来参数
     var item = ModalRoute.of(context)!.settings.arguments as RoomListItemData;
+    var showTextTool = data.subTitle.length > 100;
 
     return Scaffold(
       appBar: AppBar(
         title: Text('房屋编号：${item.id}'),
         actions: [
           IconButton(
-            onPressed: () {
-              Share.share('https://www.baidu.com');
-            },
+            onPressed: () => Share.share('https://www.baidu.com'),
             icon: const Icon(Icons.share),
           )
         ],
@@ -70,6 +71,7 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
               Container(
                 padding: const EdgeInsets.only(left: 10, top: 6, bottom: 6),
                 child: Wrap(
+                  spacing: 4,
                   children: data.tags.map((item) => CommonTag(item)).toList(),
                 ),
               ),
@@ -79,7 +81,7 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
                 child: Wrap(
                   runSpacing: 10,
                   children: [
-                    BaseInfoItem('面积：${data.size}'),
+                    BaseInfoItem('面积：${data.size}平方米'),
                     BaseInfoItem('楼层：${data.floor}'),
                     BaseInfoItem('户型：${data.roomType}'),
                     const BaseInfoItem('装修：精装'),
@@ -87,9 +89,43 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
                 ),
               ),
               const CommonTitle('房屋配置'),
-              RoomApplicanceList(list: data.applicances),
+              RoomApplicanceList(data.applicances),
               const CommonTitle('房屋概况'),
-              const CommonTitle('房屋配置'),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Column(
+                  children: [
+                    Text(data.subTitle, maxLines: showAllText ? 5 : null),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (showTextTool)
+                          GestureDetector(
+                            onTap: () => setState(() {
+                              showAllText = !showAllText;
+                            }),
+                            child: Row(
+                              children: [
+                                Text(showTextTool ? '展开' : '收起'),
+                                Icon(showAllText
+                                    ? Icons.keyboard_arrow_down
+                                    : Icons.keyboard_arrow_up)
+                              ],
+                            ),
+                          )
+                        else
+                          Container(),
+                        GestureDetector(
+                            onTap: () => Navigator.pushNamed(context, 'test'),
+                            child: const Text('举报')),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              const CommonTitle('猜你喜欢'),
+              const Info(),
+              const SizedBox(height: 100),
             ],
           ),
           Positioned(
@@ -147,7 +183,7 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
                       onTap: (() => Navigator.pushNamed(context, 'test')),
                       child: Container(
                         height: 50,
-                        margin: const EdgeInsets.only(right: 5),
+                        margin: const EdgeInsets.only(right: 6),
                         decoration: BoxDecoration(
                           color: Colors.green,
                           borderRadius: BorderRadius.circular(8),

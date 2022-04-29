@@ -5,7 +5,7 @@ class CommonPicker {
   static Future<int?>? showPicker({
     BuildContext? context,
     List<String>? options,
-    int? value,
+    int? value = 0,
     double height = 300,
   }) {
     var controller = FixedExtentScrollController(initialItem: value!);

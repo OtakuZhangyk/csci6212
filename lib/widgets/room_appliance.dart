@@ -85,7 +85,7 @@ class _RoomApplianceState extends State<RoomAppliance> {
 class RoomApplicanceList extends StatelessWidget {
   final List<String> list;
 
-  const RoomApplicanceList({super.key, required this.list});
+  const RoomApplicanceList(this.list, {super.key});
 
   @override
   Widget build(BuildContext context) {
